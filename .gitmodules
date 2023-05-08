@@ -1,0 +1,6 @@
+[submodule "structs"]
+	path = structs
+	url = ./structs
+[submodule "chap3"]
+	path = chap3
+	url = ./chap3

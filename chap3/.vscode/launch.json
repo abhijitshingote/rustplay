@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'chap3'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=chap3",
+                    "--package=chap3"
+                ],
+                "filter": {
+                    "name": "chap3",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'chap3'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=chap3",
+                    "--package=chap3"
+                ],
+                "filter": {
+                    "name": "chap3",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
