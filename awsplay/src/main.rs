@@ -10,10 +10,12 @@ use tokio::io::{AsyncBufReadExt, BufReader};
 use std::{process};
 use serde::{Serialize,Deserialize};
 use serde_json;
+use std::time::Instant;
 
 
 #[tokio::main]
 async fn main() -> Result<(), s3::Error> {
+    let before = Instant::now();
     let args = Opt::parse();
     let config = aws_config::load_from_env().await;
     let client = s3::Client::new(&config);
@@ -21,6 +23,7 @@ async fn main() -> Result<(), s3::Error> {
     let path = parse_s3_uri(&args.file_name);
     println!("{:?}", path);
     read_s3_object(&path, &client, NumLines::Num(args.num_lines)).await;
+    println!("Took {:2?} to complete",before.elapsed());
     Ok(())
 }
 #[derive(Default, Parser, Debug)]
@@ -85,7 +88,15 @@ async fn read_s3_object(s3_path: &S3Path, client: &Client, n: NumLines) {
                 // println!("{}", &line[snip..snip+22]);
                 // println!("{}",&line);
                 let r: Rate = serde_json::from_str(&line).unwrap();
-                println!("{:?},{:?}",r.billing_code,r.negotiated_rates[0].negotiated_prices[0].negotiated_rate);
+                // println!("{:?},{:?}",r.billing_code,r.negotiated_rates[0].negotiated_prices[0].negotiated_rate);
+                let mut num_neg_prices = 0;
+                let mut num_prov_ref = 0;
+                for nr in &r.negotiated_rates {
+                    num_neg_prices += nr.negotiated_prices.len();
+                    num_prov_ref += nr.provider_references.len();
+                }
+                println!("Billing Code:{:?}, {:?} # of Neg Rate Obj N {:?},TOTAL Neg Prices Q {:?}, TOTAL Provider References P {:?}",
+                r.billing_code_type,r.billing_code,r.negotiated_rates.len(),&num_neg_prices,&num_prov_ref);
             }
         }
     }
