@@ -1,0 +1,11 @@
+,billing_code,npi,tin_value,billing_class,billing_code_modifier,service_codes,negotiation_arrangement,negotiated_type,tin_type,billing_code_type,negotiated_rates_list,negotiated_rates_max,negotiated_rates_min,name,billing_code_type_version,description,expiration_date,additional_information,bundled_codes,covered_services
+0,47563,1194893263,1194893263,institutional,[],[],ffs,derived,npi,CPT,[7871.0],7871.0,7871.0,LAPS SURG CHOLECYSTECTOMY W CHOLANGIOGRAPHY,,,9999-12-31,,[],[]
+1,00014,1194893263,1194893263,professional,[],['22'],ffs,derived,npi,CPT,[1633.7],1633.7,1633.7,LAPS SURG CHOLECYSTECTOMY W CHOLANGIOGRAPHY,,,9999-12-31,,[],[]
+2,47563,1356490817,1356490817,institutional,[],[],ffs,derived,npi,CPT,[5971.55],5971.55,5971.55,LAPS SURG CHOLECYSTECTOMY W CHOLANGIOGRAPHY,,,9999-12-31,,[],[]
+3,47563,1447883301,1447883301,institutional,[],[],ffs,derived,npi,CPT,[47039.85],47039.85,47039.85,LAPS SURG CHOLECYSTECTOMY W CHOLANGIOGRAPHY,,,9999-12-31,,[],[]
+4,47563,1528026267,1528026267,institutional,[],[],ffs,derived,npi,CPT,[32394.21],32394.21,32394.21,LAPS SURG CHOLECYSTECTOMY W CHOLANGIOGRAPHY,,,9999-12-31,,[],[]
+5,47563,1568460772,1568460772,institutional,[],[],ffs,derived,npi,CPT,[11244.65],11244.65,11244.65,LAPS SURG CHOLECYSTECTOMY W CHOLANGIOGRAPHY,,,9999-12-31,,[],[]
+6,47563,1598766495,1598766495,institutional,[],[],ffs,derived,npi,CPT,[9644.8],9644.8,9644.8,LAPS SURG CHOLECYSTECTOMY W CHOLANGIOGRAPHY,,,9999-12-31,,[],[]
+7,47563,1669423380,1669423380,institutional,[],[],ffs,derived,npi,CPT,[20424.66],20424.66,20424.66,LAPS SURG CHOLECYSTECTOMY W CHOLANGIOGRAPHY,,,9999-12-31,,[],[]
+8,47563,1669423380,1669423380,professional,[],['22'],ffs,derived,npi,CPT,[1256.43],1256.43,1256.43,LAPS SURG CHOLECYSTECTOMY W CHOLANGIOGRAPHY,,,9999-12-31,,[],[]
+9,47563,1821091059,1821091059,institutional,[],[],ffs,derived,npi,CPT,[12520.17],12520.17,12520.17,LAPS SURG CHOLECYSTECTOMY W CHOLANGIOGRAPHY,,,9999-12-31,,[],[]
