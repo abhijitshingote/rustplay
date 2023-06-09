@@ -16,6 +16,7 @@ use std::sync::Arc;
 #[tokio::main]
 async fn main() {
     println!("Hello, Rad!!!!");
+    // tokio::runtime::Builder::
     let now = Instant::now();
     // let counter = Arc::new(Mutex::new(0));
     let args = Opt::parse();
@@ -61,33 +62,32 @@ async fn main() {
     let mut lines = buf_reader.lines();
     // let l =lines.next_line()
     let mut counter: i32 = 0;
-    let lanes = Semaphore::new(1);
+    let lanes = Arc::new(Semaphore::new(1));
     let mut handles: Vec<JoinHandle<()>> = Vec::new();
     for _ in 0..output_arc.num_lines {
         counter += 1;
-        if counter%10000==0 {
-            println!("Line {},Time elapsed {} mins",&counter,(now.elapsed().as_secs_f32()/60_f32 ));
+        
+        let permit =lanes.clone().acquire_owned().await.unwrap();
+        if counter%1==0 {
+            println!("Line {} started - Got Semaphore,Time elapsed {} mins",&counter,(now.elapsed().as_secs_f32()/60_f32 ));
         }
-        let _ =lanes.acquire().await.unwrap();
-        let l = lines
-        .next_line()
-        .await
-        .unwrap_or_else(|err| {process::exit(0)});
+        let l = lines.next_line().await.unwrap_or_else(|err| {process::exit(0)});
         let l=l.unwrap_or_else( || {
             println!("Maybe end of file!\nRunning file took {:.10} mins.",(now.elapsed().as_secs_f32()/60_f32 ));
             process::exit(1);});
         let output_clone=output_arc.clone();
         let prov_df_ref_clone = prov_df_ref.clone();
-        let handle=tokio::spawn(async move {
-
-            
-
+        let handle=tokio::spawn(async move {        
             let idx = l.find(r#""billing_code""#).unwrap();
             let idx_bc_1 = l[(idx + 14)..].find('"').unwrap() + idx + 14 + 1;
             let idx_bc_2 = l[(idx_bc_1 + 1)..].find('"').unwrap() + idx_bc_1 + 1;
             let billing_code = &l[idx_bc_1..idx_bc_2];
             // println!("Billing Code : {}", billing_code);
             write_file(&output_clone,&l, billing_code, counter,prov_df_ref_clone).await;
+            drop(permit);
+            if counter%1==0 {
+                println!("Line {} completed - Dropped Semaphore Semaphore,Time elapsed {} mins",&counter,(now.elapsed().as_secs_f32()/60_f32 ));
+            }
         });
         handles.push(handle);
     }
@@ -152,13 +152,19 @@ async fn write_file(config: &Arc<Opt>,line: &String, billing_code: &str, counter
         .finish().unwrap();
     let df=df.select([col("*")]).explode([col("negotiated_rates")]);
     // let df = df.select([col("*"),col("negotiated_rates").alias("something")]);
-    let df = df.unnest(["negotiated_rates"]).explode([col("negotiated_prices")]).unnest(["negotiated_prices"]);
+    let df = df.unnest(["negotiated_rates"]);
     let df = df.explode([col("provider_references")]);
     // .select(&[col("negotiated_rates")]).collect().unwrap();
     // println!("{:?}",df.collect().unwrap());
-    let prov_df=prov_df_ref_clone.to_owned();
+    let prov_df=prov_df_ref_clone;
+    let owned_prov_df=(*prov_df).clone();
+    // let cloned_prov_df=owned_prov_df.clone()
+    // let prov_df_lazy_ref= &prov_df.lazy();
     // println!("{:?}",prov_df);
-    let join_df=df.collect().unwrap().inner_join(&prov_df, ["provider_references"], ["provider_group_id"]);
+    // let join_df=df.collect().unwrap().inner_join(&prov_df, ["provider_references"], ["provider_group_id"]);
+
+    let join_df=df.inner_join(owned_prov_df.lazy(), col("provider_references"), col("provider_group_id")).collect();
+    // .inner_join(&prov_df, ["provider_references"], ["provider_group_id"]);
     // let join_df=join_df.unwrap().clone();
     // println!("{:?}",join_df);
     // let _ =ParquetWriter::new(fw).with_compression(ParquetCompression::Snappy).finish(&mut join_df).unwrap();
@@ -168,7 +174,7 @@ async fn write_file(config: &Arc<Opt>,line: &String, billing_code: &str, counter
         }
         Err(e) => println!("ERROR\n{}\n{}",e,line)
     };
-    fs::remove_file(&temp_file).unwrap();
+    // fs::remove_file(&temp_file).unwrap();
 
 }
 
